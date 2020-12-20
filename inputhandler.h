@@ -10,6 +10,10 @@ struct Input
 	int scrollPosY;
 	int scrolldelta;
 	float zoomlevel{ 1 };
+
+	//Rendertarget
+	int rendertargetCX; //Center of rendertarget
+	int rendertargetCY; 
 };
 
 extern Input cdinput;

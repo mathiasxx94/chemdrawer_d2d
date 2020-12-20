@@ -111,8 +111,14 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 	case WM_MOUSEMOVE:
 	{
 		needsredraw = true;
-		cdinput.mousePosX = GET_X_LPARAM(lparam) * cdinput.zoomlevel;
-		cdinput.mousePosY = GET_Y_LPARAM(lparam) * cdinput.zoomlevel;
+		cdinput.mousePosX = GET_X_LPARAM(lparam);
+		cdinput.mousePosY = GET_Y_LPARAM(lparam);
+
+		int mouseoffset = (cdinput.mousePosX - cdinput.scrollPosX) * (1.0f / cdinput.zoomlevel);
+		cdinput.mousePosX = cdinput.rendertargetCX + mouseoffset;
+
+		mouseoffset = (cdinput.mousePosY - cdinput.scrollPosY) * (1.0f / cdinput.zoomlevel);
+		cdinput.mousePosY = cdinput.rendertargetCY + mouseoffset;
 		return 0;
 	}
 
@@ -121,8 +127,12 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 		if (GET_KEYSTATE_WPARAM(wparam) == MK_CONTROL) //CTRL is pressed
 		{
 			needsredraw = true;
-			cdinput.scrollPosX = GET_X_LPARAM(lparam);
-			cdinput.scrollPosY = GET_Y_LPARAM(lparam);
+
+			
+			cdinput.scrollPosX = cdinput.rendertargetCX;//GET_X_LPARAM(lparam);
+			cdinput.scrollPosY = cdinput.rendertargetCY;// GET_Y_LPARAM(lparam);
+			
+			
 
 			if (GET_WHEEL_DELTA_WPARAM(wparam) > 0)
 				cdinput.zoomlevel += 0.1f; 
@@ -148,6 +158,8 @@ void chemd::OnResize(UINT width, UINT height)
 		D2D1_SIZE_U size;
 		size.width = width;
 		size.height = height;
+		cdinput.rendertargetCX = width / 2;
+		cdinput.rendertargetCY = height / 2;
 		m_pRenderTarget->Resize(size);
 	}
 }
@@ -225,6 +237,10 @@ HRESULT chemd::CreateDeviceResources()
 		GetClientRect(chemd::m_hwnd, &rc);
 
 		D2D1_SIZE_U size = D2D1::SizeU(static_cast<UINT>(rc.right - rc.left), static_cast<UINT>(rc.bottom - rc.top));
+		cdinput.rendertargetCX = size.width / 2;
+		cdinput.rendertargetCY = size.height / 2;
+		cdinput.scrollPosX = cdinput.rendertargetCX;
+		cdinput.scrollPosY = cdinput.rendertargetCY;
 
 		// Create Direct2D render target.
 		hr = m_pD2DFactory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(m_hwnd, size), &m_pRenderTarget);
@@ -319,7 +335,9 @@ HRESULT chemd::OnRender()
 		//{
 		//	GradientLine(D2D1::Point2F(0, 0), D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5, 10);
 		//}
-		//m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5), m_pBlackBrush);
+
+		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.rendertargetCX, cdinput.rendertargetCY), 5, 5), m_pBlackBrush, 5);
+		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5), m_pBlackBrush);
 		m_pBlackBrush->SetColor(D2D1::ColorF(0, 1, 1, 1));
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(10,10), 5, 5), m_pBlackBrush,5);
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(2550, 10), 5, 5), m_pBlackBrush, 5);
