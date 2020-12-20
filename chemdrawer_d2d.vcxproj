@@ -130,6 +130,7 @@
     <ClInclude Include="inputhandler.h" />
     <ClInclude Include="renderhelpers.h" />
     <ClInclude Include="Source.h" />
+    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

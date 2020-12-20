@@ -36,7 +36,7 @@ namespace chemd
 	static IDWriteTextFormat* m_pTextFormat;
 	static ID2D1PathGeometry* m_pPathGeometry;
 	//static ID2D1LinearGradientBrush* m_pLinearGradientBrush;
-	static ID2D1SolidColorBrush* m_pBlackBrush;
+	//static ID2D1SolidColorBrush* m_pBlackBrush;
 	static ID2D1BitmapBrush* m_pGridPatternBitmapBrush;
 	static ID2D1Bitmap* m_pBitmap;
 	static ID2D1Bitmap* m_pAnotherBitmap;
@@ -44,3 +44,4 @@ namespace chemd
 
 extern ID2D1HwndRenderTarget* m_pRenderTarget;
 extern ID2D1LinearGradientBrush* m_pLinearGradientBrush;
+extern ID2D1SolidColorBrush* m_pBlackBrush;

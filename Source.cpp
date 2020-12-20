@@ -3,11 +3,13 @@
 #include <chrono>
 #include "inputhandler.h"
 #include "renderhelpers.h"
+#include "Vector.h"
 
 
 Input cdinput;
 ID2D1HwndRenderTarget* m_pRenderTarget;
 ID2D1LinearGradientBrush* m_pLinearGradientBrush;
+ID2D1SolidColorBrush* m_pBlackBrush;
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -90,6 +92,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
+	static bool needsredraw{ false };
+	if (needsredraw)
+	{
+		PAINTSTRUCT ps;
+		BeginPaint(chemd::m_hwnd, &ps);
+		chemd::OnRender();
+		EndPaint(chemd::m_hwnd, &ps);
+		needsredraw = false;
+	}
+
 	switch (message)
 	{
 	case WM_SIZE:
@@ -98,13 +110,26 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 
 	case WM_MOUSEMOVE:
 	{
+		needsredraw = true;
+		cdinput.mousePosX = GET_X_LPARAM(lparam) * cdinput.zoomlevel;
+		cdinput.mousePosY = GET_Y_LPARAM(lparam) * cdinput.zoomlevel;
+		return 0;
+	}
+
+	case WM_MOUSEWHEEL:
+	{
+		if (GET_KEYSTATE_WPARAM(wparam) == MK_CONTROL) //CTRL is pressed
+		{
+			needsredraw = true;
+			cdinput.scrollPosX = GET_X_LPARAM(lparam);
+			cdinput.scrollPosY = GET_Y_LPARAM(lparam);
+
+			if (GET_WHEEL_DELTA_WPARAM(wparam) > 0)
+				cdinput.zoomlevel += 0.1f; 
+			if (GET_WHEEL_DELTA_WPARAM(wparam) < 0)
+				cdinput.zoomlevel -= 0.1f;
+		}
 		
-		cdinput.mousePosX = GET_X_LPARAM(lparam);
-		cdinput.mousePosY = GET_Y_LPARAM(lparam);
-		PAINTSTRUCT ps;
-		BeginPaint(chemd::m_hwnd, &ps);
-		chemd::OnRender();
-		EndPaint(chemd::m_hwnd, &ps);
 		return 0;
 	}
 	
@@ -280,10 +305,12 @@ HRESULT chemd::OnRender()
 		//m_pLinearGradientBrush->SetEndPoint(D2D1::Point2F(800, 450));
 		//m_pLinearGradientBrush->SetStartPoint(D2D1::Point2F(400, 450));
 		//m_pRenderTarget->DrawLine(D2D1::Point2F(400, 450), D2D1::Point2F(800, 450), m_pLinearGradientBrush, 2, NULL);
-		//m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Scale(2, 2, D2D1::Point2F(400, 400)));
-		//m_pRenderTarget->DrawLine(D2D1::Point2F(400,400), D2D1::Point2F(800, 500), m_pLinearGradientBrush, 2, NULL);
+		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Scale(cdinput.zoomlevel, cdinput.zoomlevel, D2D1::Point2F(cdinput.scrollPosX, cdinput.scrollPosY)));
+		//m_pRenderTarget->DrawLine(D2D1::Point2F(400,1200), D2D1::Point2F(400, 1440), m_pLinearGradientBrush, 2, NULL);
 
-		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+		
+
+		//m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 		//POINT pos;
 		//GetCursorPos(&pos);
 		//ScreenToClient(chemd::m_hwnd, &pos);
@@ -292,14 +319,13 @@ HRESULT chemd::OnRender()
 		//{
 		//	GradientLine(D2D1::Point2F(0, 0), D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5, 10);
 		//}
-		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5), m_pBlackBrush);
-
+		//m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5), m_pBlackBrush);
+		m_pBlackBrush->SetColor(D2D1::ColorF(0, 1, 1, 1));
+		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(10,10), 5, 5), m_pBlackBrush,5);
+		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(2550, 10), 5, 5), m_pBlackBrush, 5);
+		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(10, 1430), 5, 5), m_pBlackBrush, 5);
 		
-		GradientLine(D2D1::Point2F(0, 0), D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY),5,5,2);
-		//RECT rect;
-		//GetWindowRect(chemd::m_hwnd, &rect);
-
-		
+		//GradientLine(Vector2D{ 500,500 }, Vector2D{ cdinput.mousePosX, cdinput.mousePosY }, 0.9f, 0.4f, 5);
 
 		hr = m_pRenderTarget->EndDraw();
 

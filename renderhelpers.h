@@ -1,4 +1,6 @@
 #pragma once
 #include <d2d1helper.h>
+#include "Vector.h"
 
-void GradientLine(D2D1_POINT_2F start, D2D1_POINT_2F end, float startalpha, float endalpha, float thickness = 1.0f);
+//Renders a black line with alpha gradient
+void GradientLine(Vector2D start, Vector2D end, float startalpha, float endalpha, float thickness = 1.0f);
