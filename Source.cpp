@@ -111,6 +111,10 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 	case WM_MOUSEMOVE:
 	{
 		needsredraw = true;
+
+		float previousPosX = cdinput.mousePosX;
+		float previousPosY = cdinput.mousePosY;
+
 		cdinput.mousePosX = GET_X_LPARAM(lparam);
 		cdinput.mousePosY = GET_Y_LPARAM(lparam);
 
@@ -119,6 +123,9 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 
 		mouseoffset = (cdinput.mousePosY - cdinput.scrollPosY) * (1.0f / cdinput.zoomlevel);
 		cdinput.mousePosY = cdinput.rendertargetCY + mouseoffset;
+
+		cdinput.mouseDeltaX = cdinput.mousePosX - previousPosX; //FIX! : check if mousedelta at various zoomlevel is okay.
+		cdinput.mouseDeltaY = cdinput.mousePosY - previousPosY;
 		return 0;
 	}
 
@@ -132,12 +139,28 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 			cdinput.scrollPosX = cdinput.rendertargetCX;//GET_X_LPARAM(lparam);
 			cdinput.scrollPosY = cdinput.rendertargetCY;// GET_Y_LPARAM(lparam);
 			
-			
 
 			if (GET_WHEEL_DELTA_WPARAM(wparam) > 0)
-				cdinput.zoomlevel += 0.1f; 
+			{
+				if (cdinput.zoomlevel <= 4)
+				{
+					cdinput.zoomlevel += 0.5f;
+				}
+			}
+				
 			if (GET_WHEEL_DELTA_WPARAM(wparam) < 0)
-				cdinput.zoomlevel -= 0.1f;
+			{
+				if (cdinput.zoomlevel > 1.f)
+				{
+					cdinput.zoomlevel -= 0.5f;
+				}
+				if (cdinput.zoomlevel > 0.5f)
+				{
+					cdinput.zoomlevel -= 0.1f;
+				}
+			}
+				
+
 		}
 		
 		return 0;
@@ -160,6 +183,8 @@ void chemd::OnResize(UINT width, UINT height)
 		size.height = height;
 		cdinput.rendertargetCX = width / 2;
 		cdinput.rendertargetCY = height / 2;
+		cdinput.scrollPosX = cdinput.rendertargetCX;
+		cdinput.scrollPosY = cdinput.rendertargetCY;
 		m_pRenderTarget->Resize(size);
 	}
 }
@@ -343,7 +368,7 @@ HRESULT chemd::OnRender()
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(2550, 10), 5, 5), m_pBlackBrush, 5);
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(10, 1430), 5, 5), m_pBlackBrush, 5);
 		
-		//GradientLine(Vector2D{ 500,500 }, Vector2D{ cdinput.mousePosX, cdinput.mousePosY }, 0.9f, 0.4f, 5);
+		GradientLine(Vector2D{ 500,500 }, Vector2D{ cdinput.mousePosX, cdinput.mousePosY }, 0.9f, 0.4f, 5);
 
 		hr = m_pRenderTarget->EndDraw();
 
