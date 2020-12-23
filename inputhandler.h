@@ -7,6 +7,15 @@ struct Input
 	float mouseDeltaX{ 0 };
 	float mouseDeltaY{ 0 };
 
+	//Handling mouse clicks
+	short LMBclickPosX{ 0 };
+	short LMBclickPosY{ 0 };
+	short LMBreleasePosX{ 0 };
+	short LMBreleasePosY{ 0 };
+	bool LMBisdown{ false };
+	bool LMBwasclicked{ false }; //Should only be valid for one frame
+	bool LMBwasreleased{ false };
+
 	//Handling mousewheel for application zooming, check code in wndproc. Only zooming while CTRL is pressed.
 	int scrollPosX;
 	int scrollPosY;
@@ -19,3 +28,4 @@ struct Input
 };
 
 extern Input cdinput;
+

@@ -123,10 +123,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="moleculeobject.cpp" />
     <ClCompile Include="renderhelpers.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="moleculeobject.h" />
     <ClInclude Include="inputhandler.h" />
     <ClInclude Include="renderhelpers.h" />
     <ClInclude Include="Source.h" />

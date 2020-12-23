@@ -1,4 +1,5 @@
 #include "renderhelpers.h"
+#include "inputhandler.h"
 #include "Source.h"
 
 
@@ -24,4 +25,14 @@ void GradientLine(Vector2D start, Vector2D end, float startalpha, float endalpha
 
 		m_pRenderTarget->DrawLine(D2D1::Point2F(start.x, start.y), D2D1::Point2F(end.x, end.y), m_pLinearGradientBrush, thickness);
 	}
+}
+
+void PreviewLine()
+{
+	//check selected tool first, return if tool is wrong.
+	//check bounding box of objects
+	//check if mousepos is at object node
+
+
+	cdinput.LMBclickPosX;
 }

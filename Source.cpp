@@ -4,6 +4,9 @@
 #include "inputhandler.h"
 #include "renderhelpers.h"
 #include "Vector.h"
+#include <vector> 
+
+#include <iostream>
 
 
 Input cdinput;
@@ -13,6 +16,13 @@ ID2D1SolidColorBrush* m_pBlackBrush;
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
+	AllocConsole(); 
+	FILE* fDummy;
+	freopen_s(&fDummy, "CONIN$", "r", stdin);
+	freopen_s(&fDummy, "CONOUT$", "w", stderr);
+	freopen_s(&fDummy, "CONOUT$", "w", stdout);
+	std::cout << "This works" << std::endl;
+
 	HRESULT hr;
 	hr = chemd::CreateDeviceIndependentResources();
 
@@ -90,6 +100,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	}
 }
 
+void resetInputState()
+{
+	cdinput.LMBwasclicked = false;
+}
+
 LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
 	static bool needsredraw{ false };
@@ -102,12 +117,31 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 		needsredraw = false;
 	}
 
+	resetInputState();
+
 	switch (message)
 	{
 	case WM_SIZE:
 		chemd::OnResize(LOWORD(lparam), HIWORD(lparam));
 		return 0;
 
+	case WM_LBUTTONDOWN:
+	{
+		SetCapture(chemd::m_hwnd);
+		cdinput.LMBclickPosX = cdinput.mousePosX;
+		cdinput.LMBclickPosY = cdinput.mousePosY;
+		cdinput.LMBisdown = true;
+		cdinput.LMBwasclicked = true;
+		return 0;
+	}
+
+	case WM_LBUTTONUP:
+	{
+		ReleaseCapture();
+		cdinput.LMBisdown = false;
+		return 0;
+	}
+		
 	case WM_MOUSEMOVE:
 	{
 		needsredraw = true;
@@ -329,7 +363,12 @@ HRESULT chemd::OnRender()
 		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 		m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
 
+		
+
 		static float xpos = 50;
+
+		
+
 		//m_pRenderTarget->DrawLine(D2D1::Point2F(static_cast<int>(xpos), 50), D2D1::Point2F(200, 400), m_pLinearGradientBrush, 2, NULL);
 		
 		//xpos += 0.1f;
@@ -348,7 +387,11 @@ HRESULT chemd::OnRender()
 		//m_pRenderTarget->DrawLine(D2D1::Point2F(400, 450), D2D1::Point2F(800, 450), m_pLinearGradientBrush, 2, NULL);
 		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Scale(cdinput.zoomlevel, cdinput.zoomlevel, D2D1::Point2F(cdinput.scrollPosX, cdinput.scrollPosY)));
 		//m_pRenderTarget->DrawLine(D2D1::Point2F(400,1200), D2D1::Point2F(400, 1440), m_pLinearGradientBrush, 2, NULL);
-
+		
+		if (cdinput.LMBisdown)
+		{
+			m_pRenderTarget->DrawLine(D2D1::Point2F(cdinput.LMBclickPosX, cdinput.LMBclickPosY), D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), m_pBlackBrush, 5, NULL);
+		}
 		
 
 		//m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
