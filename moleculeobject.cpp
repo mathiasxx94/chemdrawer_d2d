@@ -20,6 +20,16 @@ void Molecule::AddElement(Vector2D pos, int hybridization, int atom)
 	AdjustBoundingBox(pos);
 }
 
+void Molecule::AddBond(int firstelement, int secondelement, int bondtype)
+{
+	Bond bond;
+	bond.firstelement = firstelement;
+	bond.secondelement = secondelement;
+	bond.bondtype = bondtype;
+
+	bonds.push_back(bond);
+}
+
 void Molecule::AdjustBoundingBox(Vector2D pos)
 {
 	pos.x > bounding_box.right ? bounding_box.right = pos.x : bounding_box.left = pos.x;
@@ -30,7 +40,6 @@ void Molecule::AdjustBoundingBox(Vector2D pos)
 	bounding_box_padded.top = bounding_box.top - bounding_box_limit;
 	bounding_box_padded.bottom = bounding_box.bottom + bounding_box_limit;
 }
-
 
 RECT Molecule::GetBoundingBoxPadded()
 {

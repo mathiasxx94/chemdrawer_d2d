@@ -35,12 +35,15 @@ class Molecule
 	~Molecule();
 
 	void AddElement(Vector2D, int hybridization, int atom);
+	void AddBond(int, int, int bondtype = bond::sb);
 	void AdjustBoundingBox(Vector2D pos);
 	RECT GetBoundingBoxPadded();
 	bool IsMoleculeHovered(int x, int y);
 	std::pair<bool,int> HoveredElement(int x, int y); 
 
 	std::vector<Element> elements;
+	std::vector<Bond> bonds;
+
 private:
 	RECT bounding_box;
 	RECT bounding_box_padded;

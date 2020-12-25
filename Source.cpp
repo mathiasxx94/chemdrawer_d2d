@@ -3,6 +3,7 @@
 #include <chrono>
 #include "inputhandler.h"
 #include "renderhelpers.h"
+#include "moleculeobject.h"
 #include "Vector.h"
 #include <vector> 
 
@@ -10,6 +11,9 @@
 
 
 Input cdinput;
+std::vector<Molecule*> molekyler;
+
+
 ID2D1HwndRenderTarget* m_pRenderTarget;
 ID2D1LinearGradientBrush* m_pLinearGradientBrush;
 ID2D1SolidColorBrush* m_pBlackBrush;
@@ -103,6 +107,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 void resetInputState()
 {
 	cdinput.LMBwasclicked = false;
+	cdinput.LMBwasreleased = false;
 }
 
 LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
@@ -127,6 +132,7 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 
 	case WM_LBUTTONDOWN:
 	{
+		needsredraw = true;
 		SetCapture(chemd::m_hwnd);
 		cdinput.LMBclickPosX = cdinput.mousePosX;
 		cdinput.LMBclickPosY = cdinput.mousePosY;
@@ -137,8 +143,10 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 
 	case WM_LBUTTONUP:
 	{
-		ReleaseCapture();
+		needsredraw = true;
 		cdinput.LMBisdown = false;
+		cdinput.LMBwasreleased = true;
+		ReleaseCapture();
 		return 0;
 	}
 		
@@ -387,12 +395,28 @@ HRESULT chemd::OnRender()
 		//m_pRenderTarget->DrawLine(D2D1::Point2F(400, 450), D2D1::Point2F(800, 450), m_pLinearGradientBrush, 2, NULL);
 		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Scale(cdinput.zoomlevel, cdinput.zoomlevel, D2D1::Point2F(cdinput.scrollPosX, cdinput.scrollPosY)));
 		//m_pRenderTarget->DrawLine(D2D1::Point2F(400,1200), D2D1::Point2F(400, 1440), m_pLinearGradientBrush, 2, NULL);
-		
-		if (cdinput.LMBisdown)
+
+		static std::vector<Vector2D> drawpos;
+
+		if (cdinput.LMBwasclicked)
 		{
-			m_pRenderTarget->DrawLine(D2D1::Point2F(cdinput.LMBclickPosX, cdinput.LMBclickPosY), D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), m_pBlackBrush, 5, NULL);
+			Vector2D temp{cdinput.LMBclickPosX, cdinput.LMBclickPosY};
+			drawpos.push_back(temp);
+		}
+		if (cdinput.LMBwasreleased)
+		{
+			Vector2D temp{ cdinput.mousePosX, cdinput.mousePosY };
+			drawpos.push_back(temp);
+		}
+		if (!cdinput.LMBisdown)
+		{
+			if (drawpos.size()==2)
+				m_pRenderTarget->DrawLine(D2D1::Point2F(drawpos[0].x, drawpos[0].y), D2D1::Point2F(drawpos[1].x, drawpos[1].y), m_pBlackBrush, 5, NULL);
+				//m_pRenderTarget->DrawLine(D2D1::Point2F(cdinput.LMBclickPosX, cdinput.LMBclickPosY), D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), m_pBlackBrush, 5, NULL);
 		}
 		
+		m_pRenderTarget->DrawLine(D2D1::Point2F(100,100), D2D1::Point2F(200, 150), m_pLinearGradientBrush, 3, NULL);
+		m_pRenderTarget->DrawLine(D2D1::Point2F(200, 150), D2D1::Point2F(300, 100), m_pLinearGradientBrush, 3, NULL);
 
 		//m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 		//POINT pos;
