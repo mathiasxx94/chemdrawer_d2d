@@ -2,8 +2,14 @@
 
 struct Input
 {
+	/*
+	Position of mouse cursor. Snappos is used to get the position the mouse would be at if it snapped to 
+	a nearby element that is drawn on the canvas.
+	*/
 	float mousePosX{ 0 };
 	float mousePosY{ 0 };
+	float snapmousePosX{ 0 };
+	float snapmousePosY{ 0 };
 	float mouseDeltaX{ 0 };
 	float mouseDeltaY{ 0 };
 

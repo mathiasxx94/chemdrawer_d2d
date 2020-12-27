@@ -24,6 +24,9 @@
     <ClCompile Include="moleculeobject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="wndprochandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source.h">
@@ -42,6 +45,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="chemproperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="drawingproperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="globalstate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wndprochandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,12 @@
 #include "renderhelpers.h"
 #include "inputhandler.h"
+#define _USE_MATH_DEFINES // for C++
+#include <cmath>
 #include "Source.h"
+
+#include <iostream>
+
+
 
 
 void GradientLine(Vector2D start, Vector2D end, float startalpha, float endalpha, float thickness)
@@ -27,12 +33,38 @@ void GradientLine(Vector2D start, Vector2D end, float startalpha, float endalpha
 	}
 }
 
+float RadToDeg(float rad)
+{
+	float deg = (rad / (M_PI)) * 180;
+	return deg;
+}
+
+float DegToRad(float deg)
+{
+	float rad = M_PI * deg / 180;
+	return rad;
+}
+
 void PreviewLine()
 {
 	//check selected tool first, return if tool is wrong.
 	//check bounding box of objects
 	//check if mousepos is at object node
 
+	if (!cdinput.LMBisdown) return;
 
-	cdinput.LMBclickPosX;
+	D2D1_POINT_2F startpos = { cdinput.LMBclickPosX, cdinput.LMBclickPosY };
+	D2D1_POINT_2F endpos = { cdinput.mousePosX, cdinput.mousePosY };
+	
+	float angle = atan2(-(endpos.y - startpos.y), endpos.x - startpos.x);
+	float iangle = RadToDeg(abs(angle)) + (15);
+	iangle -= std::fmodf(iangle, 30);
+	angle = DegToRad(iangle) * (angle > 0 ? 1 : -1);
+	
+	endpos.x = 40 * std::cosf(angle) + startpos.x;
+	endpos.y = -40 * std::sinf(angle) + startpos.y;
+	
+	m_pRenderTarget->DrawLine(startpos, endpos, m_pBlackBrush, 1.32f);
+	
 }
+

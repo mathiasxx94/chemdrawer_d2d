@@ -66,3 +66,23 @@ std::pair<bool, int> Molecule::HoveredElement(int x, int y)
 	}
 	return std::pair<bool, int>(false, 0);
 }
+
+std::pair<int, float> Molecule::ClosestElement(int x, int y)
+{
+	float closestdistance = 10000;
+	float distancetoelement;
+	int closestindex;
+
+	for (int i = 0; i < elements.size(); i++)
+	{
+		distancetoelement = std::sqrtf(std::powf((x - elements[i].pos2D.x), 2) + std::pow((y - elements[i].pos2D.y), 2));
+
+		if (distancetoelement < closestdistance)
+		{
+			closestdistance = distancetoelement;
+			closestindex = i;
+		}
+	}
+
+	return std::pair<int, float>(closestindex, closestdistance);
+}

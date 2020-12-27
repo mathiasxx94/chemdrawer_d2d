@@ -31,6 +31,7 @@ struct Bond
 
 class Molecule
 {
+public:
 	Molecule(Vector2D, int hybridization, int atom = elements::carbon);
 	~Molecule();
 
@@ -40,6 +41,7 @@ class Molecule
 	RECT GetBoundingBoxPadded();
 	bool IsMoleculeHovered(int x, int y);
 	std::pair<bool,int> HoveredElement(int x, int y); 
+	std::pair<int, float> ClosestElement(int x, int y);
 
 	std::vector<Element> elements;
 	std::vector<Bond> bonds;

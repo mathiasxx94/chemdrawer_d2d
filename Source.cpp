@@ -4,6 +4,8 @@
 #include "inputhandler.h"
 #include "renderhelpers.h"
 #include "moleculeobject.h"
+#include "globalstate.h"
+#include "wndprochandler.h"
 #include "Vector.h"
 #include <vector> 
 
@@ -11,6 +13,8 @@
 
 
 Input cdinput;
+GlobalState cdglobalstate;
+
 std::vector<Molecule*> molekyler;
 
 
@@ -134,18 +138,14 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 	{
 		needsredraw = true;
 		SetCapture(chemd::m_hwnd);
-		cdinput.LMBclickPosX = cdinput.mousePosX;
-		cdinput.LMBclickPosY = cdinput.mousePosY;
-		cdinput.LMBisdown = true;
-		cdinput.LMBwasclicked = true;
+		processmessage::LButtonDown(wparam, lparam);
 		return 0;
 	}
 
 	case WM_LBUTTONUP:
 	{
 		needsredraw = true;
-		cdinput.LMBisdown = false;
-		cdinput.LMBwasreleased = true;
+		processmessage::LButtonUp(wparam, lparam);
 		ReleaseCapture();
 		return 0;
 	}
@@ -168,6 +168,9 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 
 		cdinput.mouseDeltaX = cdinput.mousePosX - previousPosX; //FIX! : check if mousedelta at various zoomlevel is okay.
 		cdinput.mouseDeltaY = cdinput.mousePosY - previousPosY;
+
+		//std::cout << cdinput.mousePosX << std::endl;
+		
 		return 0;
 	}
 
@@ -427,6 +430,8 @@ HRESULT chemd::OnRender()
 		//{
 		//	GradientLine(D2D1::Point2F(0, 0), D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5, 10);
 		//}
+
+		PreviewLine();
 
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.rendertargetCX, cdinput.rendertargetCY), 5, 5), m_pBlackBrush, 5);
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5), m_pBlackBrush);
