@@ -7,7 +7,7 @@ struct GlobalState
 	int hoveredobject; //index into molekyler vector
 	int hoveredatom; //index into elements vector
 
-	bool needsrerender{ 0 };
+	bool needsrerender{ false };
 };
 
 extern GlobalState cdglobalstate;

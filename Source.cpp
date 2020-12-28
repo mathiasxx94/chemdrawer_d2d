@@ -154,20 +154,7 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 	{
 		needsredraw = true;
 
-		float previousPosX = cdinput.mousePosX;
-		float previousPosY = cdinput.mousePosY;
-
-		cdinput.mousePosX = GET_X_LPARAM(lparam);
-		cdinput.mousePosY = GET_Y_LPARAM(lparam);
-
-		int mouseoffset = (cdinput.mousePosX - cdinput.scrollPosX) * (1.0f / cdinput.zoomlevel);
-		cdinput.mousePosX = cdinput.rendertargetCX + mouseoffset;
-
-		mouseoffset = (cdinput.mousePosY - cdinput.scrollPosY) * (1.0f / cdinput.zoomlevel);
-		cdinput.mousePosY = cdinput.rendertargetCY + mouseoffset;
-
-		cdinput.mouseDeltaX = cdinput.mousePosX - previousPosX; //FIX! : check if mousedelta at various zoomlevel is okay.
-		cdinput.mouseDeltaY = cdinput.mousePosY - previousPosY;
+		processmessage::MouseMove(wparam, lparam);
 
 		//std::cout << cdinput.mousePosX << std::endl;
 		

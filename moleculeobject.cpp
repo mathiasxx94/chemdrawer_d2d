@@ -86,3 +86,8 @@ std::pair<int, float> Molecule::ClosestElement(int x, int y)
 
 	return std::pair<int, float>(closestindex, closestdistance);
 }
+
+Vector2D Molecule::GetElementPosition(int index)
+{
+	return elements.at(index).pos2D;
+}

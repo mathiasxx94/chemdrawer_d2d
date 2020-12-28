@@ -36,12 +36,14 @@ public:
 	~Molecule();
 
 	void AddElement(Vector2D, int hybridization, int atom);
+	Vector2D GetElementPosition(int index);
 	void AddBond(int, int, int bondtype = bond::sb);
 	void AdjustBoundingBox(Vector2D pos);
 	RECT GetBoundingBoxPadded();
 	bool IsMoleculeHovered(int x, int y);
 	std::pair<bool,int> HoveredElement(int x, int y); 
-	std::pair<int, float> ClosestElement(int x, int y);
+	
+	std::pair<int, float> ClosestElement(int x, int y);						//Takes a position, e.g. mousepos and returns index and distance of element closest to this
 
 	std::vector<Element> elements;
 	std::vector<Bond> bonds;
