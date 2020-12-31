@@ -35,7 +35,8 @@ public:
 	Molecule(Vector2D, int hybridization, int atom = elements::carbon);
 	~Molecule();
 
-	void AddElement(Vector2D, int hybridization, int atom);
+	void AddElement(Vector2D, int hybridization, int atom = elements::carbon);
+	int GetNumberOfElements();
 	Vector2D GetElementPosition(int index);
 	void AddBond(int, int, int bondtype = bond::sb);
 	void AdjustBoundingBox(Vector2D pos);
@@ -45,10 +46,13 @@ public:
 	
 	std::pair<int, float> ClosestElement(int x, int y);						//Takes a position, e.g. mousepos and returns index and distance of element closest to this
 
+	//std::vector<Element> elements;
+	//std::vector<Bond> bonds;
+
+private:
 	std::vector<Element> elements;
 	std::vector<Bond> bonds;
 
-private:
 	RECT bounding_box;
 	RECT bounding_box_padded;
 	int bounding_box_limit{ 5 };

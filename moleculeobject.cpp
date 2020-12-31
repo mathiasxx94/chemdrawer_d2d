@@ -20,6 +20,11 @@ void Molecule::AddElement(Vector2D pos, int hybridization, int atom)
 	AdjustBoundingBox(pos);
 }
 
+int Molecule::GetNumberOfElements()
+{
+	return elements.size();
+}
+
 void Molecule::AddBond(int firstelement, int secondelement, int bondtype)
 {
 	Bond bond;

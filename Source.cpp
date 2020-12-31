@@ -81,25 +81,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		//static auto time = std::chrono::high_resolution_clock::now();
 		while (msg.message != WM_QUIT)
 		{
-			//if (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
-			//{
-			//	::TranslateMessage(&msg);
-			//	::DispatchMessageW(&msg);
-			//	continue;
-			//}
-			//
-			//auto currenttime = std::chrono::high_resolution_clock::now();
-			//std::chrono::duration<float, std::milli> elapsedtime = currenttime - time;
-			//if (static_cast<int>(elapsedtime.count()) < 50) continue;
-			//time = std::chrono::high_resolution_clock::now();
-			//
-			//PAINTSTRUCT ps;
-			//BeginPaint(chemd::m_hwnd, &ps);
-			//chemd::OnRender();
-			//EndPaint(chemd::m_hwnd, &ps);
-			
+			static auto time = std::chrono::high_resolution_clock::now();
 			while (::GetMessage(&msg, NULL, 0U, 0U))
 			{
+				auto currenttime = std::chrono::high_resolution_clock::now();
+				std::chrono::duration<float, std::milli> elapsedtime = currenttime - time;
+				time = std::chrono::high_resolution_clock::now();
+				std::cout << 1000.0f / elapsedtime.count() << std::endl;
+
 				::TranslateMessage(&msg);
 				::DispatchMessageW(&msg);
 			}
@@ -158,6 +147,12 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 
 		//std::cout << cdinput.mousePosX << std::endl;
 		
+		return 0;
+	}
+
+	case WM_KEYDOWN:
+	{
+		needsredraw = true;
 		return 0;
 	}
 
@@ -386,24 +381,24 @@ HRESULT chemd::OnRender()
 		m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Scale(cdinput.zoomlevel, cdinput.zoomlevel, D2D1::Point2F(cdinput.scrollPosX, cdinput.scrollPosY)));
 		//m_pRenderTarget->DrawLine(D2D1::Point2F(400,1200), D2D1::Point2F(400, 1440), m_pLinearGradientBrush, 2, NULL);
 
-		static std::vector<Vector2D> drawpos;
-
-		if (cdinput.LMBwasclicked)
-		{
-			Vector2D temp{cdinput.LMBclickPosX, cdinput.LMBclickPosY};
-			drawpos.push_back(temp);
-		}
-		if (cdinput.LMBwasreleased)
-		{
-			Vector2D temp{ cdinput.mousePosX, cdinput.mousePosY };
-			drawpos.push_back(temp);
-		}
-		if (!cdinput.LMBisdown)
-		{
-			if (drawpos.size()==2)
-				m_pRenderTarget->DrawLine(D2D1::Point2F(drawpos[0].x, drawpos[0].y), D2D1::Point2F(drawpos[1].x, drawpos[1].y), m_pBlackBrush, 5, NULL);
-				//m_pRenderTarget->DrawLine(D2D1::Point2F(cdinput.LMBclickPosX, cdinput.LMBclickPosY), D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), m_pBlackBrush, 5, NULL);
-		}
+		//static std::vector<Vector2D> drawpos;
+		//
+		//if (cdinput.LMBwasclicked)
+		//{
+		//	Vector2D temp{cdinput.LMBclickPosX, cdinput.LMBclickPosY};
+		//	drawpos.push_back(temp);
+		//}
+		//if (cdinput.LMBwasreleased)
+		//{
+		//	Vector2D temp{ cdinput.mousePosX, cdinput.mousePosY };
+		//	drawpos.push_back(temp);
+		//}
+		//if (!cdinput.LMBisdown)
+		//{
+		//	if (drawpos.size()==2)
+		//		m_pRenderTarget->DrawLine(D2D1::Point2F(drawpos[0].x, drawpos[0].y), D2D1::Point2F(drawpos[1].x, drawpos[1].y), m_pBlackBrush, 5, NULL);
+		//		//m_pRenderTarget->DrawLine(D2D1::Point2F(cdinput.LMBclickPosX, cdinput.LMBclickPosY), D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), m_pBlackBrush, 5, NULL);
+		//}
 		
 		m_pRenderTarget->DrawLine(D2D1::Point2F(100,100), D2D1::Point2F(200, 150), m_pLinearGradientBrush, 3, NULL);
 		m_pRenderTarget->DrawLine(D2D1::Point2F(200, 150), D2D1::Point2F(300, 100), m_pLinearGradientBrush, 3, NULL);
@@ -417,6 +412,16 @@ HRESULT chemd::OnRender()
 		//{
 		//	GradientLine(D2D1::Point2F(0, 0), D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5, 10);
 		//}
+
+		for (int i = 0; i < molekyler.size(); i++)
+		{
+			if (molekyler.at(i)->GetNumberOfElements() == 2)
+			{
+				Vector2D start = molekyler.at(i)->GetElementPosition(0);
+				Vector2D end = molekyler.at(i)->GetElementPosition(1);
+				m_pRenderTarget->DrawLine(D2D1::Point2F(start.x, start.y), D2D1::Point2F(end.x, end.y), m_pBlackBrush, 5, NULL);
+			}
+		}
 
 		PreviewLine();
 

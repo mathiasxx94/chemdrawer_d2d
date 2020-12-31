@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="mathhelpers.cpp" />
     <ClCompile Include="moleculeobject.cpp" />
     <ClCompile Include="renderhelpers.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -132,6 +133,7 @@
     <ClInclude Include="chemproperties.h" />
     <ClInclude Include="drawingproperties.h" />
     <ClInclude Include="globalstate.h" />
+    <ClInclude Include="mathhelpers.h" />
     <ClInclude Include="moleculeobject.h" />
     <ClInclude Include="inputhandler.h" />
     <ClInclude Include="renderhelpers.h" />
