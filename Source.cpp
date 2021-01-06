@@ -413,21 +413,46 @@ HRESULT chemd::OnRender()
 		//	GradientLine(D2D1::Point2F(0, 0), D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5, 10);
 		//}
 
+		//for (int i = 0; i < molekyler.size(); i++)
+		//{
+		//	if (molekyler.at(i)->GetNumberOfElements() == 2)
+		//	{
+		//		Vector2D start = molekyler.at(i)->GetElementPosition(0);
+		//		Vector2D end = molekyler.at(i)->GetElementPosition(1);
+		//		m_pRenderTarget->DrawLine(D2D1::Point2F(start.x, start.y), D2D1::Point2F(end.x, end.y), m_pBlackBrush, 5, NULL);
+		//	}
+		//}            ,
+
 		for (int i = 0; i < molekyler.size(); i++)
 		{
-			if (molekyler.at(i)->GetNumberOfElements() == 2)
+			for (int bond = 0; bond < molekyler.at(i)->GetNumberOfBonds(); bond++)
 			{
-				Vector2D start = molekyler.at(i)->GetElementPosition(0);
-				Vector2D end = molekyler.at(i)->GetElementPosition(1);
-				m_pRenderTarget->DrawLine(D2D1::Point2F(start.x, start.y), D2D1::Point2F(end.x, end.y), m_pBlackBrush, 5, NULL);
+				Bond temp = molekyler.at(i)->GetBondByIndex(bond);
+				Vector2D start = molekyler.at(i)->GetElementPosition(temp.firstelement);
+				Vector2D end = molekyler.at(i)->GetElementPosition(temp.secondelement);
+				m_pRenderTarget->DrawLine(D2D1::Point2F(start.x, start.y), D2D1::Point2F(end.x, end.y), m_pBlackBrush, 1.32f, NULL);
+				
 			}
 		}
 
+		//Draw bounding box around first molecule
+		if (molekyler.size()==1)
+		{
+			RECT area = molekyler.at(0)->GetBoundingBoxPadded();
+			m_pRenderTarget->DrawRectangle(D2D1::RectF(area.left, area.top, area.right, area.bottom), m_pBlackBrush);
+		}
+		
+
 		PreviewLine();
+
+		if (cdglobalstate.atomishovered)
+		{
+			m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.snapmousePosX, cdinput.snapmousePosY), 5, 5), m_pBlackBrush, 10);
+		}
 
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.rendertargetCX, cdinput.rendertargetCY), 5, 5), m_pBlackBrush, 5);
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5), m_pBlackBrush);
-		m_pBlackBrush->SetColor(D2D1::ColorF(0, 1, 1, 1));
+		//m_pBlackBrush->SetColor(D2D1::ColorF(0, 1, 1, 1));
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(10,10), 5, 5), m_pBlackBrush,5);
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(2550, 10), 5, 5), m_pBlackBrush, 5);
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(10, 1430), 5, 5), m_pBlackBrush, 5);

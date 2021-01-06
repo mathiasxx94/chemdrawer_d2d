@@ -35,10 +35,22 @@ void Molecule::AddBond(int firstelement, int secondelement, int bondtype)
 	bonds.push_back(bond);
 }
 
+Bond Molecule::GetBondByIndex(int index)
+{
+	return bonds.at(index);
+}
+
+int Molecule::GetNumberOfBonds()
+{
+	return bonds.size();
+}
+
 void Molecule::AdjustBoundingBox(Vector2D pos)
 {
-	pos.x > bounding_box.right ? bounding_box.right = pos.x : bounding_box.left = pos.x;
-	pos.y > bounding_box.bottom ? bounding_box.bottom = pos.y : bounding_box.top = pos.y;
+	if (pos.x > bounding_box.right)  bounding_box.right = pos.x;
+	if (pos.x < bounding_box.left)   bounding_box.left = pos.x;
+	if (pos.y > bounding_box.bottom) bounding_box.bottom = pos.y;
+	if (pos.y < bounding_box.top)    bounding_box.top = pos.y;
 
 	bounding_box_padded.left = bounding_box.left - bounding_box_limit;
 	bounding_box_padded.right = bounding_box.right + bounding_box_limit;

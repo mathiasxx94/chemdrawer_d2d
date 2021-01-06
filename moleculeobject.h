@@ -39,6 +39,8 @@ public:
 	int GetNumberOfElements();
 	Vector2D GetElementPosition(int index);
 	void AddBond(int, int, int bondtype = bond::sb);
+	Bond GetBondByIndex(int index);
+	int GetNumberOfBonds();
 	void AdjustBoundingBox(Vector2D pos);
 	RECT GetBoundingBoxPadded();
 	bool IsMoleculeHovered(int x, int y);
@@ -55,7 +57,7 @@ private:
 
 	RECT bounding_box;
 	RECT bounding_box_padded;
-	int bounding_box_limit{ 5 };
+	int bounding_box_limit{ 10 };
 };
 
 extern std::vector<Molecule*> molekyler;
