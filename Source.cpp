@@ -21,6 +21,7 @@ std::vector<Molecule*> molekyler;
 ID2D1HwndRenderTarget* m_pRenderTarget;
 ID2D1LinearGradientBrush* m_pLinearGradientBrush;
 ID2D1SolidColorBrush* m_pBlackBrush;
+ID2D1Factory* m_pD2DFactory;
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -153,6 +154,7 @@ LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 	case WM_KEYDOWN:
 	{
 		needsredraw = true;
+		processmessage::KeyBoardKeyDown(wparam);
 		return 0;
 	}
 
@@ -399,7 +401,7 @@ HRESULT chemd::OnRender()
 		//		m_pRenderTarget->DrawLine(D2D1::Point2F(drawpos[0].x, drawpos[0].y), D2D1::Point2F(drawpos[1].x, drawpos[1].y), m_pBlackBrush, 5, NULL);
 		//		//m_pRenderTarget->DrawLine(D2D1::Point2F(cdinput.LMBclickPosX, cdinput.LMBclickPosY), D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), m_pBlackBrush, 5, NULL);
 		//}
-		
+
 		m_pRenderTarget->DrawLine(D2D1::Point2F(100,100), D2D1::Point2F(200, 150), m_pLinearGradientBrush, 3, NULL);
 		m_pRenderTarget->DrawLine(D2D1::Point2F(200, 150), D2D1::Point2F(300, 100), m_pLinearGradientBrush, 3, NULL);
 
@@ -430,7 +432,9 @@ HRESULT chemd::OnRender()
 				Bond temp = molekyler.at(i)->GetBondByIndex(bond);
 				Vector2D start = molekyler.at(i)->GetElementPosition(temp.firstelement);
 				Vector2D end = molekyler.at(i)->GetElementPosition(temp.secondelement);
-				m_pRenderTarget->DrawLine(D2D1::Point2F(start.x, start.y), D2D1::Point2F(end.x, end.y), m_pBlackBrush, 1.32f, NULL);
+				//m_pRenderTarget->DrawLine(D2D1::Point2F(start.x, start.y), D2D1::Point2F(end.x, end.y), m_pBlackBrush, 1.32f, NULL);
+				//WedgedBondDraw(start, end);
+				DashedBondDraw(start, end);
 				
 			}
 		}
@@ -442,6 +446,33 @@ HRESULT chemd::OnRender()
 			m_pRenderTarget->DrawRectangle(D2D1::RectF(area.left, area.top, area.right, area.bottom), m_pBlackBrush);
 		}
 		
+		//Test dynamic geometry generation
+		ID2D1GeometrySink* pSink = NULL;
+		ID2D1PathGeometry* m_pPathGeometry2;
+		hr = m_pD2DFactory->CreatePathGeometry(&m_pPathGeometry2);
+		hr = m_pPathGeometry2->Open(&pSink);
+		pSink->SetFillMode(D2D1_FILL_MODE_ALTERNATE);
+		pSink->BeginFigure(D2D1::Point2F(500, 200), D2D1_FIGURE_BEGIN_FILLED);
+		pSink->AddLine(D2D1::Point2F(540, 195));
+		pSink->AddLine(D2D1::Point2F(540, 205));
+		pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
+		hr = pSink->Close();
+		SafeRelease(&pSink);
+
+		//m_pRenderTarget->DrawGeometry(m_pPathGeometry2, m_pBlackBrush, 1.0f);
+		m_pRenderTarget->FillGeometry(m_pPathGeometry2, m_pBlackBrush);
+		m_pPathGeometry2->Release();
+
+		hr = m_pD2DFactory->CreatePathGeometry(&m_pPathGeometry2);
+		hr = m_pPathGeometry2->Open(&pSink);
+		pSink->SetFillMode(D2D1_FILL_MODE_ALTERNATE);
+		pSink->BeginFigure(D2D1::Point2F(0, 0), D2D1_FIGURE_BEGIN_FILLED);
+		pSink->AddLine(D2D1::Point2F(200, 100));
+		pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
+		hr = pSink->Close();
+		SafeRelease(&pSink);
+		m_pRenderTarget->DrawGeometry(m_pPathGeometry2, m_pBlackBrush, 1);
+		m_pPathGeometry2->Release();
 
 		PreviewLine();
 

@@ -28,7 +28,7 @@ namespace chemd
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	static HWND m_hwnd;
-	static ID2D1Factory* m_pD2DFactory;
+	//static ID2D1Factory* m_pD2DFactory;
 	static IWICImagingFactory* m_pWICFactory;
 	static IDWriteFactory* m_pDWriteFactory;
 	//extern ID2D1HwndRenderTarget* m_pRenderTarget;
@@ -41,6 +41,7 @@ namespace chemd
 	static ID2D1Bitmap* m_pAnotherBitmap;
 }
 
+extern ID2D1Factory* m_pD2DFactory;
 extern ID2D1HwndRenderTarget* m_pRenderTarget;
 extern ID2D1LinearGradientBrush* m_pLinearGradientBrush;
 extern ID2D1SolidColorBrush* m_pBlackBrush;

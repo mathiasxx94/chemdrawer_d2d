@@ -2,6 +2,6 @@
 
 namespace mathhelp
 {
-	float DegToRad(float deg);
-	float RadToDeg(float rad);
+	float DegToRad(const float deg);
+	float RadToDeg(const float rad);
 }

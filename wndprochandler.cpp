@@ -66,10 +66,11 @@ void processmessage::LButtonUp(WPARAM wparam, LPARAM lparam)
 		else
 		{
 			molekyler.at(cdglobalstate.curreditetobject)->AddElement(Vector2D{ cdinput.snapmouseTargetX,cdinput.snapmouseTargetY }, hybridization::sp3);
-			molekyler.at(cdglobalstate.hoveredobject)->AddBond(cdglobalstate.hoveredatom, molekyler.at(cdglobalstate.curreditetobject)->GetNumberOfElements() - 1);
+			molekyler.at(cdglobalstate.curreditetobject)->AddBond(cdglobalstate.hoveredatom, molekyler.at(cdglobalstate.curreditetobject)->GetNumberOfElements() - 1);
 		}
 	}
 }
+
 
 void processmessage::MouseMove(WPARAM wparam, LPARAM lparam)
 {
@@ -95,44 +96,12 @@ void processmessage::MouseMove(WPARAM wparam, LPARAM lparam)
 	processmessage::CalculatePreviewLineEndPoint(wparam, lparam);
 }
 
-//void processmessage::CalculateSnapPosition() //FIX! If bounding box of molecules are overlapping, mouse will only snap to last found
-//{
-//	for (int i = 0; i < molekyler.size(); i++)
-//	{
-//		cdglobalstate.objectishovered = false;
-//
-//		if (molekyler.at(i)->IsMoleculeHovered(cdinput.mousePosX, cdinput.mousePosY))
-//		{
-//			cdglobalstate.objectishovered = true;
-//			cdglobalstate.hoveredobject = i;
-//			//std::pair<bool, int> hover = molekyler.at(i)->HoveredElement(cdinput.mousePosX, cdinput.mousePosY);
-//			std::pair<int,float> closestelement = molekyler.at(i)->ClosestElement(cdinput.mousePosX, cdinput.mousePosY);
-//
-//			//If distance from mousecursor to closest element is less than 5 pixels, set snapmouse
-//			if (closestelement.second < 5.0f) //FIX! needs adjustable snap limit
-//			{
-//				cdinput.snapmousePosX = molekyler.at(i)->GetElementPosition(closestelement.first).x;
-//				cdinput.snapmousePosY = molekyler.at(i)->GetElementPosition(closestelement.first).y;
-//
-//				cdglobalstate.hoveredatom = closestelement.first;
-//				cdglobalstate.atomishovered = true;
-//			}
-//			//else
-//			//{
-//			//	cdinput.snapmousePosX = cdinput.mousePosX;
-//			//	cdinput.snapmousePosY = cdinput.mousePosY;
-//			//
-//			//	cdglobalstate.atomishovered = false;
-//			//}
-//
-//			break; //FIX! remove break when overlapping molecule bounding boxes are fixed
-//		}
-//		cdinput.snapmousePosX = cdinput.mousePosX;
-//		cdinput.snapmousePosY = cdinput.mousePosY;
-//
-//		cdglobalstate.atomishovered = false;
-//	}
-//}
+
+void KeyBoardKeyDown(WPARAM)
+{
+
+}
+
 
 void processmessage::CalculateSnapPosition() //FIX! If bounding box of molecules are overlapping, mouse will only snap to last found
 {
