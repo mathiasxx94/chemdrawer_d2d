@@ -433,8 +433,12 @@ HRESULT chemd::OnRender()
 				Vector2D start = molekyler.at(i)->GetElementPosition(temp.firstelement);
 				Vector2D end = molekyler.at(i)->GetElementPosition(temp.secondelement);
 				//m_pRenderTarget->DrawLine(D2D1::Point2F(start.x, start.y), D2D1::Point2F(end.x, end.y), m_pBlackBrush, 1.32f, NULL);
+				if (temp.bondtype == bond::db)
+					m_pRenderTarget->DrawLine(D2D1::Point2F(start.x, start.y), D2D1::Point2F(end.x, end.y), m_pBlackBrush, 1.32f, NULL);
+				else
+					DashedBondDraw(start, end);
 				//WedgedBondDraw(start, end);
-				DashedBondDraw(start, end);
+				//DashedBondDraw(start, end);
 				
 			}
 		}
@@ -479,6 +483,10 @@ HRESULT chemd::OnRender()
 		if (cdglobalstate.atomishovered)
 		{
 			m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.snapmousePosX, cdinput.snapmousePosY), 5, 5), m_pBlackBrush, 10);
+		}
+		if (cdglobalstate.bondishovered)
+		{
+			m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.snapmousePosX, cdinput.snapmousePosY), 5, 5), m_pBlackBrush, 30);
 		}
 
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.rendertargetCX, cdinput.rendertargetCY), 5, 5), m_pBlackBrush, 5);

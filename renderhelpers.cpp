@@ -49,35 +49,6 @@ void PreviewLine()
 	
 }
 
-//void WedgedBondDraw(Vector2D start, Vector2D end)
-//{
-//	HRESULT hr;
-//	ID2D1GeometrySink* pSink = NULL;
-//	ID2D1PathGeometry* m_pPathGeometry;
-//
-//	Vector2D target;
-//	float offsetangle = mathhelp::DegToRad(5);
-//	float linelength = (end-start).length();
-//	linelength /= std::cosf(offsetangle);
-//	float angle = atan2(-(end.y - start.y), end.x - start.x);
-//	target.x = linelength * std::cosf(angle - offsetangle) + start.x;
-//	target.y = -linelength * std::sinf(angle - offsetangle) + start.y;
-//
-//	hr = m_pD2DFactory->CreatePathGeometry(&m_pPathGeometry);
-//	hr = m_pPathGeometry->Open(&pSink);
-//	pSink->SetFillMode(D2D1_FILL_MODE_ALTERNATE);
-//	pSink->BeginFigure(D2D1::Point2F(start.x, start.y), D2D1_FIGURE_BEGIN_FILLED);
-//	pSink->AddLine(D2D1::Point2F(target.x, target.y));
-//	target.x = linelength * std::cosf(angle + offsetangle) + start.x;
-//	target.y = -linelength * std::sinf(angle + offsetangle) + start.y;
-//	pSink->AddLine(D2D1::Point2F(target.x, target.y));
-//	pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
-//	hr = pSink->Close();
-//	SafeRelease(&pSink);
-//
-//	m_pRenderTarget->FillGeometry(m_pPathGeometry, m_pBlackBrush);
-//	m_pPathGeometry->Release();
-//}
 
 void WedgedBondDraw(Vector2D start, Vector2D end)
 {

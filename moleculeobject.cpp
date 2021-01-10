@@ -1,4 +1,5 @@
 #include "moleculeobject.h"
+#include <tuple>
 
 
 Molecule::Molecule(Vector2D pos, int hybridization, int atom)
@@ -33,6 +34,11 @@ void Molecule::AddBond(int firstelement, int secondelement, int bondtype)
 	bond.bondtype = bondtype;
 
 	bonds.push_back(bond);
+}
+
+void Molecule::SetBondType(int index, int bondtype)
+{
+	bonds[index].bondtype = bondtype;
 }
 
 Bond Molecule::GetBondByIndex(int index)
@@ -103,6 +109,49 @@ std::pair<int, float> Molecule::ClosestElement(int x, int y)
 
 	return std::pair<int, float>(closestindex, closestdistance);
 }
+
+Vector2D Molecule::GetBondPosition(int index)
+{
+	//Bond position is defined as center of the two bond nodes
+	Vector2D midpoint = (elements[bonds[index].firstelement].pos2D + elements[bonds[index].secondelement].pos2D) / 2;
+	return midpoint;
+}
+
+std::pair<int, float> Molecule::ClosestBond(int x, int y)
+{
+	float closestdistance = 10000;
+	float distancetobond;
+	int closestindex;
+
+	for (int i = 0; i < bonds.size(); i++)
+	{
+		Vector2D midpoint = GetBondPosition(i);
+
+		distancetobond = std::sqrtf(std::powf((x - midpoint.x), 2) + std::pow((y - midpoint.y), 2));
+
+		if (distancetobond < closestdistance)
+		{
+			closestdistance = distancetobond;
+			closestindex = i;
+		}
+	}
+
+	return std::pair<int, float>(closestindex, closestdistance);
+}
+
+
+std::tuple<bool, int, float> Molecule::ClosestPart(int x, int y)
+{
+	std::pair<int, float> element = ClosestElement(x, y);
+	std::pair<int, float> bond = ClosestBond(x, y);
+
+	if (element.second < bond.second)
+	{
+		return std::tuple<bool, int, float>(true, element.first, element.second);
+	}
+	return std::tuple<bool, int, float>(false, bond.first, bond.second);
+}
+
 
 Vector2D Molecule::GetElementPosition(int index)
 {

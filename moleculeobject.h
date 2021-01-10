@@ -39,7 +39,9 @@ public:
 	int GetNumberOfElements();
 	Vector2D GetElementPosition(int index);
 	void AddBond(int, int, int bondtype = bond::sb);
+	void SetBondType(int index, int bondtype);
 	Bond GetBondByIndex(int index);
+	Vector2D GetBondPosition(int index);
 	int GetNumberOfBonds();
 	void AdjustBoundingBox(Vector2D pos);
 	RECT GetBoundingBoxPadded();
@@ -47,9 +49,8 @@ public:
 	std::pair<bool,int> HoveredElement(int x, int y); 
 	
 	std::pair<int, float> ClosestElement(int x, int y);						//Takes a position, e.g. mousepos and returns index and distance of element closest to this
-
-	//std::vector<Element> elements;
-	//std::vector<Bond> bonds;
+	std::pair<int, float> ClosestBond(int x, int y);
+	std::tuple<bool, int, float> ClosestPart(int x, int y);					//Bool: 0 is element 1 is bond
 
 private:
 	std::vector<Element> elements;
