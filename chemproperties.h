@@ -11,7 +11,7 @@ enum bond
 {
 	sb = 0,
 	db,
-	tp,
+	tb,
 	wedge,
 	hash
 };

@@ -100,12 +100,42 @@ void processmessage::MouseMove(WPARAM wparam, LPARAM lparam)
 
 void processmessage::KeyBoardKeyDown(WPARAM wparam)
 {
-	if (wparam == 0x31)
+	if (cdglobalstate.bondishovered)
 	{
-		if (cdglobalstate.bondishovered)
+		int bondtype{ 0 };
+		switch (wparam)
 		{
-			molekyler[cdglobalstate.hoveredobject]->SetBondType(cdglobalstate.hoveredbond, bond::db);
+			case 0x31:
+			{
+				bondtype = bond::sb;
+				break;
+			}
+
+			case 0x32:
+			{
+				bondtype = bond::db;
+				break;
+			}
+
+			case 0x33:
+			{
+				bondtype = bond::tb;
+				break;
+			}
+
+			case 0x34:
+			{
+				bondtype = bond::wedge;
+				break;
+			}
+
+			case 0x35:
+			{
+				bondtype = bond::hash;
+				break;
+			}
 		}
+		molekyler[cdglobalstate.hoveredobject]->SetBondType(cdglobalstate.hoveredbond, bondtype);
 	}
 }
 

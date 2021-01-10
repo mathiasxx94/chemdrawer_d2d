@@ -433,13 +433,12 @@ HRESULT chemd::OnRender()
 				Vector2D start = molekyler.at(i)->GetElementPosition(temp.firstelement);
 				Vector2D end = molekyler.at(i)->GetElementPosition(temp.secondelement);
 				//m_pRenderTarget->DrawLine(D2D1::Point2F(start.x, start.y), D2D1::Point2F(end.x, end.y), m_pBlackBrush, 1.32f, NULL);
-				if (temp.bondtype == bond::db)
+				if (temp.bondtype == bond::sb)
 					m_pRenderTarget->DrawLine(D2D1::Point2F(start.x, start.y), D2D1::Point2F(end.x, end.y), m_pBlackBrush, 1.32f, NULL);
-				else
+				else if (temp.bondtype == bond::wedge)
+					WedgedBondDraw(start, end);
+				else if (temp.bondtype == bond::hash)
 					DashedBondDraw(start, end);
-				//WedgedBondDraw(start, end);
-				//DashedBondDraw(start, end);
-				
 			}
 		}
 
