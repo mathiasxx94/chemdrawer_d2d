@@ -9,3 +9,4 @@ void GradientLine(Vector2D start, Vector2D end, float startalpha, float endalpha
 void PreviewLine();
 void WedgedBondDraw(Vector2D start, Vector2D end);
 void DashedBondDraw(Vector2D start, Vector2D end);
+void BondHoverVisDraw();

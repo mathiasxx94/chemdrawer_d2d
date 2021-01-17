@@ -8,7 +8,7 @@
 
 
 
-
+struct Bond; //Forward declaration of struct for use in bond
 struct Element
 {
 	Vector2D pos2D;
@@ -20,6 +20,7 @@ struct Element
 	float posZ3D;
 	int atom;
 	int hybridization;
+	std::vector<Bond*> connectedbonds;
 };
 
 struct Bond
@@ -27,6 +28,7 @@ struct Bond
 	int firstelement;
 	int secondelement;
 	int bondtype;
+	float bondangle; // Counterclockwise 0-180 degrees, and clockwise 0-(-180) degrees
 };
 
 class Molecule
@@ -35,16 +37,27 @@ public:
 	Molecule(Vector2D, int hybridization, int atom = elements::carbon);
 	~Molecule();
 
+	// Element methods
 	void AddElement(Vector2D, int hybridization, int atom = elements::carbon);
 	int GetNumberOfElements();
+	Element* pGetElementByIndex(int index);
 	Vector2D GetElementPosition(int index);
+
+	//Bond methods
 	void AddBond(int, int, int bondtype = bond::sb);
 	void SetBondType(int index, int bondtype);
 	Bond GetBondByIndex(int index);
+	Bond* pGetBondByIndex(int index);
 	Vector2D GetBondPosition(int index);
 	int GetNumberOfBonds();
+	std::vector<Bond> GetBondVector();
+	void EraseBond(int index);
+
+	//Bounding box
 	void AdjustBoundingBox(Vector2D pos);
 	RECT GetBoundingBoxPadded();
+
+	//Objecthovering
 	bool IsMoleculeHovered(int x, int y);
 	std::pair<bool,int> HoveredElement(int x, int y); 
 	

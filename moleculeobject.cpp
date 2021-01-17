@@ -26,6 +26,11 @@ int Molecule::GetNumberOfElements()
 	return elements.size();
 }
 
+Element* Molecule::pGetElementByIndex(int index)
+{
+	return &elements.at(index);
+}
+
 void Molecule::AddBond(int firstelement, int secondelement, int bondtype)
 {
 	Bond bond;
@@ -44,6 +49,11 @@ void Molecule::SetBondType(int index, int bondtype)
 Bond Molecule::GetBondByIndex(int index)
 {
 	return bonds.at(index);
+}
+
+Bond* Molecule::pGetBondByIndex(int index)
+{
+	return &bonds.at(index);
 }
 
 int Molecule::GetNumberOfBonds()
@@ -156,4 +166,14 @@ std::tuple<bool, int, float> Molecule::ClosestPart(int x, int y)
 Vector2D Molecule::GetElementPosition(int index)
 {
 	return elements.at(index).pos2D;
+}
+
+std::vector<Bond> Molecule::GetBondVector()
+{
+	return bonds;
+}
+
+void Molecule::EraseBond(int index)
+{
+	bonds.erase(bonds.begin() + index);
 }

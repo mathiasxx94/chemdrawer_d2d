@@ -21,6 +21,7 @@ std::vector<Molecule*> molekyler;
 ID2D1HwndRenderTarget* m_pRenderTarget;
 ID2D1LinearGradientBrush* m_pLinearGradientBrush;
 ID2D1SolidColorBrush* m_pBlackBrush;
+ID2D1SolidColorBrush* m_pObjectHoverBrush;
 ID2D1Factory* m_pD2DFactory;
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
@@ -307,6 +308,11 @@ HRESULT chemd::CreateDeviceResources()
 
 		if (SUCCEEDED(hr))
 		{
+			hr = m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(0, 0, 1, 0.7f), &m_pObjectHoverBrush);
+		}
+
+		if (SUCCEEDED(hr))
+		{
 			ID2D1GradientStopCollection* pGradientStops = NULL;
 
 			// Create a linear gradient.
@@ -333,6 +339,7 @@ void chemd::DiscardDeviceResources()
 	SafeRelease(&m_pRenderTarget);
 	SafeRelease(&m_pBitmap);
 	SafeRelease(&m_pBlackBrush);
+	SafeRelease(&m_pObjectHoverBrush);
 	SafeRelease(&m_pLinearGradientBrush);
 	SafeRelease(&m_pAnotherBitmap);
 	SafeRelease(&m_pGridPatternBitmapBrush);
@@ -449,43 +456,44 @@ HRESULT chemd::OnRender()
 			m_pRenderTarget->DrawRectangle(D2D1::RectF(area.left, area.top, area.right, area.bottom), m_pBlackBrush);
 		}
 		
-		//Test dynamic geometry generation
-		ID2D1GeometrySink* pSink = NULL;
-		ID2D1PathGeometry* m_pPathGeometry2;
-		hr = m_pD2DFactory->CreatePathGeometry(&m_pPathGeometry2);
-		hr = m_pPathGeometry2->Open(&pSink);
-		pSink->SetFillMode(D2D1_FILL_MODE_ALTERNATE);
-		pSink->BeginFigure(D2D1::Point2F(500, 200), D2D1_FIGURE_BEGIN_FILLED);
-		pSink->AddLine(D2D1::Point2F(540, 195));
-		pSink->AddLine(D2D1::Point2F(540, 205));
-		pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
-		hr = pSink->Close();
-		SafeRelease(&pSink);
-
-		//m_pRenderTarget->DrawGeometry(m_pPathGeometry2, m_pBlackBrush, 1.0f);
-		m_pRenderTarget->FillGeometry(m_pPathGeometry2, m_pBlackBrush);
-		m_pPathGeometry2->Release();
-
-		hr = m_pD2DFactory->CreatePathGeometry(&m_pPathGeometry2);
-		hr = m_pPathGeometry2->Open(&pSink);
-		pSink->SetFillMode(D2D1_FILL_MODE_ALTERNATE);
-		pSink->BeginFigure(D2D1::Point2F(0, 0), D2D1_FIGURE_BEGIN_FILLED);
-		pSink->AddLine(D2D1::Point2F(200, 100));
-		pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
-		hr = pSink->Close();
-		SafeRelease(&pSink);
-		m_pRenderTarget->DrawGeometry(m_pPathGeometry2, m_pBlackBrush, 1);
-		m_pPathGeometry2->Release();
+		////Test dynamic geometry generation
+		//ID2D1GeometrySink* pSink = NULL;
+		//ID2D1PathGeometry* m_pPathGeometry2;
+		//hr = m_pD2DFactory->CreatePathGeometry(&m_pPathGeometry2);
+		//hr = m_pPathGeometry2->Open(&pSink);
+		//pSink->SetFillMode(D2D1_FILL_MODE_ALTERNATE);
+		//pSink->BeginFigure(D2D1::Point2F(500, 200), D2D1_FIGURE_BEGIN_FILLED);
+		//pSink->AddLine(D2D1::Point2F(540, 195));
+		//pSink->AddLine(D2D1::Point2F(540, 205));
+		//pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
+		//hr = pSink->Close();
+		//SafeRelease(&pSink);
+		//
+		////m_pRenderTarget->DrawGeometry(m_pPathGeometry2, m_pBlackBrush, 1.0f);
+		//m_pRenderTarget->FillGeometry(m_pPathGeometry2, m_pBlackBrush);
+		//m_pPathGeometry2->Release();
+		//
+		//hr = m_pD2DFactory->CreatePathGeometry(&m_pPathGeometry2);
+		//hr = m_pPathGeometry2->Open(&pSink);
+		//pSink->SetFillMode(D2D1_FILL_MODE_ALTERNATE);
+		//pSink->BeginFigure(D2D1::Point2F(0, 0), D2D1_FIGURE_BEGIN_FILLED);
+		//pSink->AddLine(D2D1::Point2F(200, 100));
+		//pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
+		//hr = pSink->Close();
+		//SafeRelease(&pSink);
+		//m_pRenderTarget->DrawGeometry(m_pPathGeometry2, m_pBlackBrush, 1);
+		//m_pPathGeometry2->Release();
 
 		PreviewLine();
 
 		if (cdglobalstate.atomishovered)
 		{
-			m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.snapmousePosX, cdinput.snapmousePosY), 5, 5), m_pBlackBrush, 10);
+			m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.snapmousePosX, cdinput.snapmousePosY), 5, 5), m_pObjectHoverBrush, 10);
 		}
 		if (cdglobalstate.bondishovered)
 		{
-			m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.snapmousePosX, cdinput.snapmousePosY), 5, 5), m_pBlackBrush, 30);
+			BondHoverVisDraw();
+			//m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.snapmousePosX, cdinput.snapmousePosY), 5, 5), m_pBlackBrush, 30);
 		}
 
 		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.rendertargetCX, cdinput.rendertargetCY), 5, 5), m_pBlackBrush, 5);

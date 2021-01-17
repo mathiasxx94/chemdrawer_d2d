@@ -35,6 +35,9 @@ struct Input
 	//Rendertarget
 	volatile int rendertargetCX; //Center of rendertarget
 	volatile int rendertargetCY; 
+
+	//Createmolecule properties
+	float bondangle;
 };
 
 extern Input cdinput;

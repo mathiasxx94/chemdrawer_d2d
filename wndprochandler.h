@@ -11,5 +11,6 @@ namespace processmessage
 
 	void CalculateSnapPosition();							//Pos also used to render overlay when an atom is pointed at, can't optimize out of wm_mousemove
 	void CalculatePreviewLineEndPoint(WPARAM, LPARAM);		//
+	void CalculateElementEndpoint();						//If mouse wasn't moved between mouse click and release
 }
 

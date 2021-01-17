@@ -1,5 +1,6 @@
 #include "renderhelpers.h"
 #include "inputhandler.h"
+#include "globalstate.h"
 #include "mathhelpers.h"
 
 #include "Source.h" //FIX! maybe not needed if remove d2d1point
@@ -107,4 +108,21 @@ void DashedBondDraw(Vector2D start, Vector2D end)
 		target2 = start + (directionunitvector * endoffset*n) + (normalunitvector * wedgeoffsetinc * n);
 		m_pRenderTarget->DrawLine(D2D1::Point2F(target1.x, target1.y), D2D1::Point2F(target2.x, target2.y), m_pBlackBrush, 1.32f);
 	}
+}
+
+void BondHoverVisDraw()
+{
+	Molecule* tempmolecule = molekyler[cdglobalstate.hoveredobject];
+
+	int firstelement = tempmolecule->GetBondByIndex(cdglobalstate.hoveredbond).firstelement;
+	int secondelement = tempmolecule->GetBondByIndex(cdglobalstate.hoveredbond).secondelement;
+
+	Vector2D firstelementpos = tempmolecule->GetElementPosition(firstelement);
+	Vector2D secondelementpos = tempmolecule->GetElementPosition(secondelement);
+	Vector2D bondcenter = (firstelementpos + secondelementpos) / 2;
+
+	firstelementpos = (firstelementpos + bondcenter) / 2;
+	secondelementpos = (bondcenter + secondelementpos) / 2;
+
+	m_pRenderTarget->DrawLine(D2D1::Point2F(firstelementpos.x, firstelementpos.y), D2D1::Point2F(secondelementpos.x, secondelementpos.y), m_pObjectHoverBrush, 20);
 }

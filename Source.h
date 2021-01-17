@@ -5,8 +5,10 @@
 #include <d2d1helper.h>
 #include <dwrite.h>
 #include <wincodec.h>
+#include <vector>
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "Dwrite")
+#include "moleculeobject.h"
 
 template<class Interface>
 inline void SafeRelease(Interface** ppInterfaceToRelease)
@@ -45,3 +47,5 @@ extern ID2D1Factory* m_pD2DFactory;
 extern ID2D1HwndRenderTarget* m_pRenderTarget;
 extern ID2D1LinearGradientBrush* m_pLinearGradientBrush;
 extern ID2D1SolidColorBrush* m_pBlackBrush;
+extern ID2D1SolidColorBrush* m_pObjectHoverBrush;
+extern std::vector<Molecule*> molekyler;
