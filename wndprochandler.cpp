@@ -43,6 +43,9 @@ void processmessage::LButtonDown(WPARAM wparam, LPARAM lparam)
 		cdglobalstate.curreditetobject = cdglobalstate.hoveredobject;
 		cdglobalstate.curreditedatom = cdglobalstate.hoveredatom;
 	}
+
+	processmessage::CalculateElementEndpoint();
+	chemd::ForceRepaint();
 }
 
 void processmessage::LButtonUp(WPARAM wparam, LPARAM lparam)
@@ -51,7 +54,7 @@ void processmessage::LButtonUp(WPARAM wparam, LPARAM lparam)
 	cdinput.LMBwasreleased = true;
 	cdglobalstate.editingisactive = false;
 
-	processmessage::CalculateElementEndpoint();
+	//processmessage::CalculateElementEndpoint();
 
 	if (cdglobalstate.newobjectcreated) //FIX! take care of self hovering on the newly created object
 	{
@@ -60,9 +63,6 @@ void processmessage::LButtonUp(WPARAM wparam, LPARAM lparam)
 		Molecule* temp = molekyler.back();
 		temp->AddElement(Vector2D{ cdinput.snapmouseTargetX, cdinput.snapmouseTargetY }, hybridization::sp3);
 		temp->AddBond(0, 1, bond::sb);
-		temp->pGetElementByIndex(0)->connectedbonds.push_back(molekyler.back()->pGetBondByIndex(0));
-		temp->pGetElementByIndex(1)->connectedbonds.push_back(molekyler.back()->pGetBondByIndex(0));
-		temp->pGetBondByIndex(0)->bondangle = cdinput.bondangle;
 	}
 	else
 	{
@@ -73,16 +73,15 @@ void processmessage::LButtonUp(WPARAM wparam, LPARAM lparam)
 		{
 			Molecule* temp = molekyler.at(cdglobalstate.hoveredobject);
 			temp->AddBond(cdglobalstate.curreditedatom, cdglobalstate.hoveredatom);
-			temp->pGetElementByIndex(cdglobalstate.curreditedatom)->connectedbonds.push_back(molekyler.back()->pGetBondByIndex(temp->GetNumberOfBonds() - 1));
-			temp->pGetElementByIndex(cdglobalstate.hoveredatom)->connectedbonds.push_back(molekyler.back()->pGetBondByIndex(temp->GetNumberOfBonds() - 1));
-			temp->pGetBondByIndex(temp->GetNumberOfBonds() - 1)->bondangle = cdinput.bondangle;
 		}
 		else
 		{
-			molekyler.at(cdglobalstate.curreditetobject)->AddElement(Vector2D{ cdinput.snapmouseTargetX,cdinput.snapmouseTargetY }, hybridization::sp3);
-			molekyler.at(cdglobalstate.curreditetobject)->AddBond(cdglobalstate.hoveredatom, molekyler.at(cdglobalstate.curreditetobject)->GetNumberOfElements() - 1);
+			Molecule* temp = molekyler.at(cdglobalstate.curreditetobject);
+			temp->AddElement(Vector2D{ cdinput.snapmouseTargetX,cdinput.snapmouseTargetY }, hybridization::sp3);
+			temp->AddBond(cdglobalstate.hoveredatom, molekyler.at(cdglobalstate.curreditetobject)->GetNumberOfElements() - 1);
 		}
 	}
+
 }
 
 
@@ -268,28 +267,167 @@ void processmessage::CalculatePreviewLineEndPoint(WPARAM wparam, LPARAM lparam)
 	cdinput.snapmouseTargetY = endpos.y;
 }
 
+
+//void processmessage::CalculatePreviewLineEndPoint(WPARAM wparam, LPARAM lparam)
+//{
+//	if (!cdinput.LMBisdown) return; //FIX!!! remember to edit this if function if used for other things than previewline
+//
+//	Vector2D startpos = { cdinput.LMBclickPosXSnap, cdinput.LMBclickPosYSnap };
+//	Vector2D endpos = { cdinput.mousePosX, cdinput.mousePosY };
+//
+//	if (startpos.x == endpos.x && startpos.y == endpos.y)
+//	{
+//		if (cdglobalstate.newobjectcreated)
+//		{
+//			Vector2D startpos = { cdinput.LMBclickPosXSnap, cdinput.LMBclickPosYSnap };
+//			cdinput.snapmouseTargetX = 40 * std::cosf(mathhelp::DegToRad(30)) + startpos.x;
+//			cdinput.snapmouseTargetY = -40 * std::sinf(mathhelp::DegToRad(30)) + startpos.y;
+//			cdinput.bondangle = mathhelp::DegToRad(30);
+//			return;
+//		}
+//
+//		//FIX!! below, need to check if snapmouseTargetX/Y is above another element in the molecule, how to solve?
+//		//maybe change cdglobalstate.hoveredelement??
+//		//okay, maybe just put all of this into calculatepreviewlineendpoint and call it both from mousemove and release
+//		Element* temp = molekyler[cdglobalstate.hoveredobject]->pGetElementByIndex(cdglobalstate.hoveredatom);
+//
+//		switch (temp->connectedbonds.size())
+//		{
+//			case 1:
+//			{
+//				float tempangle = temp->connectedbonds.at(0)->bondangle;
+//				Vector2D startpos = { cdinput.LMBclickPosXSnap, cdinput.LMBclickPosYSnap };
+//				cdinput.snapmouseTargetX = 40 * std::cosf(mathhelp::DegToRad(60) + tempangle) + startpos.x;
+//				cdinput.snapmouseTargetY = -40 * std::sinf(mathhelp::DegToRad(60) + tempangle) + startpos.y;
+//				cdinput.bondangle = mathhelp::DegToRad(60) + tempangle;
+//				break;
+//			}
+//		}
+//	}
+//
+//	//Get delta angle between current mousepos and LMBclickpos
+//	float angle = atan2(-(endpos.y - startpos.y), endpos.x - startpos.x);
+//
+//	// Angle snapping can be disabled by holding ctrl
+//	if (!(wparam & MK_CONTROL))
+//	{
+//		float iangle = mathhelp::RadToDeg(abs(angle)) + (15);
+//		iangle -= std::fmodf(iangle, 30);
+//		angle = mathhelp::DegToRad(iangle) * (angle > 0 ? 1 : -1);
+//	}
+//
+//	// Line length 
+//	int linelength = 40; //FIX! use global line length from settings
+//	if (wparam & MK_SHIFT)
+//	{
+//		linelength = (endpos - startpos).length();
+//	}
+//
+//	cdinput.bondangle = angle;
+//	endpos.x = linelength * std::cosf(angle) + startpos.x;
+//	endpos.y = -linelength * std::sinf(angle) + startpos.y;
+//
+//
+//	cdinput.snapmouseTargetX = endpos.x;
+//	cdinput.snapmouseTargetY = endpos.y;
+//}
+
+
+//void processmessage::CalculateElementEndpoint()
+//{
+//	//This should only be called from LButtonUp message
+//	//Needs some way to find endpoint of new element if mouse not moving between MB click and release
+//	//We also need some way to predict a logical direction for the new bond based on already
+//	//attached bonds to a element
+//
+//	//Check if mouse has moved
+//	Vector2D startpos = { cdinput.mousePosX, cdinput.mousePosY };
+//	Vector2D endpos = { cdinput.LMBclickPosX, cdinput.LMBclickPosY };
+//
+//	if (startpos.x == endpos.x && startpos.y == endpos.y)
+//	{
+//		if (cdglobalstate.newobjectcreated)
+//		{
+//			Vector2D startpos = { cdinput.LMBclickPosXSnap, cdinput.LMBclickPosYSnap };
+//			cdinput.snapmouseTargetX = 40 * std::cosf(mathhelp::DegToRad(30)) + startpos.x;
+//			cdinput.snapmouseTargetY = -40 * std::sinf(mathhelp::DegToRad(30)) + startpos.y;
+//			cdinput.bondangle = mathhelp::DegToRad(30);
+//			return;
+//		}
+//
+//		//FIX!! below, need to check if snapmouseTargetX/Y is above another element in the molecule, how to solve?
+//		//maybe change cdglobalstate.hoveredelement??
+//		//okay, maybe just put all of this into calculatepreviewlineendpoint and call it both from mousemove and release
+//		Element* temp = molekyler[cdglobalstate.hoveredobject]->pGetElementByIndex(cdglobalstate.hoveredatom);
+//
+//		switch (temp->connectedbonds.size())
+//		{
+//		case 1:
+//		{
+//			float tempangle = temp->connectedbonds.at(0)->bondangle;
+//			Vector2D startpos = { cdinput.LMBclickPosXSnap, cdinput.LMBclickPosYSnap };
+//			cdinput.snapmouseTargetX = 40 * std::cosf(mathhelp::DegToRad(60) + tempangle) + startpos.x;
+//			cdinput.snapmouseTargetY = -40 * std::sinf(mathhelp::DegToRad(60)+tempangle) + startpos.y;
+//
+//			//cdglobalstate.hoveredatom = molekyler.at(cdglobalstate.hoveredobject)->ClosestElement(cdinput.mousePosX, cdinput.mousePosY).first;
+//
+//			cdinput.bondangle = mathhelp::DegToRad(60) + tempangle;
+//			break;
+//		}
+//		}
+//
+//
+//
+//
+//		
+//	}
+//}
+
 void processmessage::CalculateElementEndpoint()
 {
 	//This should only be called from LButtonUp message
+	//Needs some way to find endpoint of new element if mouse not moving between MB click and release
+	//We also need some way to predict a logical direction for the new bond based on already
+	//attached bonds to a element
 
 	//Check if mouse has moved
 	Vector2D startpos = { cdinput.mousePosX, cdinput.mousePosY };
 	Vector2D endpos = { cdinput.LMBclickPosX, cdinput.LMBclickPosY };
 
-	//Needs some way to find endpoint if mouse not moving between MB click and release
-	//We also need some way to predict a logical direction for the new bond based on already
-	//attached bonds to a element
-	if (startpos.x == endpos.x && startpos.y == endpos.y)
+	
+	if (cdglobalstate.newobjectcreated)
 	{
-		if (cdglobalstate.newobjectcreated)
-		{
-			Vector2D startpos = { cdinput.LMBclickPosXSnap, cdinput.LMBclickPosYSnap };
-			cdinput.snapmouseTargetX = 40 * std::cosf(mathhelp::DegToRad(30)) + startpos.x;
-			cdinput.snapmouseTargetY = -40 * std::sinf(mathhelp::DegToRad(30)) + startpos.y;
-			return;
-		}
-
-
-		
+		Vector2D startpos = { cdinput.LMBclickPosXSnap, cdinput.LMBclickPosYSnap };
+		cdinput.snapmouseTargetX = 40 * std::cosf(mathhelp::DegToRad(30)) + startpos.x;
+		cdinput.snapmouseTargetY = -40 * std::sinf(mathhelp::DegToRad(30)) + startpos.y;
+		cdinput.bondangle = mathhelp::DegToRad(30);
+		return;
 	}
+
+	//FIX!! below, need to check if snapmouseTargetX/Y is above another element in the molecule, how to solve?
+	//maybe change cdglobalstate.hoveredelement??
+	//okay, maybe just put all of this into calculatepreviewlineendpoint and call it both from mousemove and release
+	Element* temp = molekyler[cdglobalstate.hoveredobject]->pGetElementByIndex(cdglobalstate.hoveredatom);
+
+	switch (temp->connectedbonds.size())
+	{
+	case 1:
+	{
+		float tempangle = temp->connectedbonds.at(0).bondangle;
+		Vector2D startpos = { cdinput.LMBclickPosXSnap, cdinput.LMBclickPosYSnap };
+		cdinput.snapmouseTargetX = 40 * std::cosf(mathhelp::DegToRad(60) + tempangle) + startpos.x;
+		cdinput.snapmouseTargetY = -40 * std::sinf(mathhelp::DegToRad(60) + tempangle) + startpos.y;
+
+		//cdglobalstate.hoveredatom = molekyler.at(cdglobalstate.hoveredobject)->ClosestElement(cdinput.mousePosX, cdinput.mousePosY).first;
+
+		cdinput.bondangle = mathhelp::DegToRad(60) + tempangle;
+		break;
+	}
+	}
+
+
+
+
+
+	
 }

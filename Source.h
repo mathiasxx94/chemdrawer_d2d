@@ -26,6 +26,7 @@ namespace chemd
 	HRESULT CreateDeviceResources();
 	void DiscardDeviceResources();
 	HRESULT OnRender();
+	void ForceRepaint();
 	void OnResize(UINT width, UINT height);
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -49,3 +50,4 @@ extern ID2D1LinearGradientBrush* m_pLinearGradientBrush;
 extern ID2D1SolidColorBrush* m_pBlackBrush;
 extern ID2D1SolidColorBrush* m_pObjectHoverBrush;
 extern std::vector<Molecule*> molekyler;
+

@@ -105,9 +105,41 @@ void resetInputState()
 	cdinput.LMBwasreleased = false;
 }
 
+DWORD WINAPI threadpainter()
+{
+	while (true)
+	{
+		if (m_pRenderTarget)
+		{ 
+			PAINTSTRUCT ps;
+			BeginPaint(chemd::m_hwnd, &ps);
+			chemd::OnRender();
+			EndPaint(chemd::m_hwnd, &ps);
+		}
+		
+		Sleep(10);
+	}
+	
+	return 0;
+}
+
+void chemd::ForceRepaint()
+{
+	PAINTSTRUCT ps;
+	BeginPaint(chemd::m_hwnd, &ps);
+	chemd::OnRender();
+	EndPaint(chemd::m_hwnd, &ps);
+}
+
 LRESULT WINAPI chemd::WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
 	static bool needsredraw{ false };
+	//static bool once{ true };
+	//if (once)
+	//{
+	//	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)threadpainter, NULL, 0, NULL);
+	//	once = false;
+	//}
 	if (needsredraw)
 	{
 		PAINTSTRUCT ps;
@@ -308,7 +340,7 @@ HRESULT chemd::CreateDeviceResources()
 
 		if (SUCCEEDED(hr))
 		{
-			hr = m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(0, 0, 1, 0.7f), &m_pObjectHoverBrush);
+			hr = m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(0, 0, 1, 0.5f), &m_pObjectHoverBrush);
 		}
 
 		if (SUCCEEDED(hr))
@@ -496,14 +528,14 @@ HRESULT chemd::OnRender()
 			//m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.snapmousePosX, cdinput.snapmousePosY), 5, 5), m_pBlackBrush, 30);
 		}
 
-		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.rendertargetCX, cdinput.rendertargetCY), 5, 5), m_pBlackBrush, 5);
-		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5), m_pBlackBrush);
-		//m_pBlackBrush->SetColor(D2D1::ColorF(0, 1, 1, 1));
-		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(10,10), 5, 5), m_pBlackBrush,5);
-		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(2550, 10), 5, 5), m_pBlackBrush, 5);
-		m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(10, 1430), 5, 5), m_pBlackBrush, 5);
+		//m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.rendertargetCX, cdinput.rendertargetCY), 5, 5), m_pBlackBrush, 5);
+		//m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cdinput.mousePosX, cdinput.mousePosY), 5, 5), m_pBlackBrush);
+		////m_pBlackBrush->SetColor(D2D1::ColorF(0, 1, 1, 1));
+		//m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(10,10), 5, 5), m_pBlackBrush,5);
+		//m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(2550, 10), 5, 5), m_pBlackBrush, 5);
+		//m_pRenderTarget->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(10, 1430), 5, 5), m_pBlackBrush, 5);
 		
-		GradientLine(Vector2D{ 500,500 }, Vector2D{ cdinput.mousePosX, cdinput.mousePosY }, 0.9f, 0.4f, 5);
+		//GradientLine(Vector2D{ 500,500 }, Vector2D{ cdinput.mousePosX, cdinput.mousePosY }, 0.9f, 0.4f, 5);
 
 		hr = m_pRenderTarget->EndDraw();
 

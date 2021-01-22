@@ -38,7 +38,19 @@ void Molecule::AddBond(int firstelement, int secondelement, int bondtype)
 	bond.secondelement = secondelement;
 	bond.bondtype = bondtype;
 
+	//Calculate bond angle of created bond
+	Vector2D startpos = elements.at(firstelement).pos2D;
+	Vector2D endpos = elements.at(secondelement).pos2D;
+	float angle = atan2(-(endpos.y - startpos.y), endpos.x - startpos.x);
+	bond.bondangle = angle;
+
 	bonds.push_back(bond);
+
+	elements[firstelement].connectedbonds.push_back(GetBondByIndex(bonds.size() - 1));
+	elements[secondelement].connectedbonds.push_back(GetBondByIndex(bonds.size() - 1));
+
+	elements[firstelement].connectedelements.push_back(pGetElementByIndex(secondelement));
+	elements[secondelement].connectedelements.push_back(pGetElementByIndex(firstelement));
 }
 
 void Molecule::SetBondType(int index, int bondtype)

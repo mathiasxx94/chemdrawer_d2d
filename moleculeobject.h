@@ -20,7 +20,8 @@ struct Element
 	float posZ3D;
 	int atom;
 	int hybridization;
-	std::vector<Bond*> connectedbonds;
+	std::vector<Element*> connectedelements;
+	std::vector<Bond> connectedbonds;
 };
 
 struct Bond
