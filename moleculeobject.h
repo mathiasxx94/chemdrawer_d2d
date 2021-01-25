@@ -13,11 +13,6 @@ struct Element
 {
 	Vector2D pos2D;
 	Vector3D pos3D;
-	float posX2D;
-	float posY2D;
-	float posX3D;
-	float posY3D;
-	float posZ3D;
 	int atom;
 	int hybridization;
 	std::vector<Element*> connectedelements;
@@ -29,7 +24,7 @@ struct Bond
 	int firstelement;
 	int secondelement;
 	int bondtype;
-	float bondangle; // Counterclockwise 0-180 degrees, and clockwise 0-(-180) degrees
+	float bondangle; // Counterclockwise 0-180 degrees, and clockwise 0-(-180) degrees in radians
 };
 
 class Molecule

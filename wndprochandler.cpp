@@ -407,20 +407,40 @@ void processmessage::CalculateElementEndpoint()
 	//FIX!! below, need to check if snapmouseTargetX/Y is above another element in the molecule, how to solve?
 	//maybe change cdglobalstate.hoveredelement??
 	//okay, maybe just put all of this into calculatepreviewlineendpoint and call it both from mousemove and release
-	Element* temp = molekyler[cdglobalstate.hoveredobject]->pGetElementByIndex(cdglobalstate.hoveredatom);
+	Molecule* tempmolecule = molekyler[cdglobalstate.hoveredobject];
+	Element* pHovAtom = tempmolecule->pGetElementByIndex(cdglobalstate.hoveredatom);
 
-	switch (temp->connectedbonds.size())
+	switch (pHovAtom->connectedbonds.size())
 	{
 	case 1:
 	{
-		float tempangle = temp->connectedbonds.at(0).bondangle;
+		Bond tempbond = pHovAtom->connectedbonds.at(0);
+		float bondangle = tempbond.bondangle;
+		float newangle;
+
+		int quadrant = mathhelp::AngleToQuadrant(bondangle);
+		if (quadrant == 0 || quadrant == 2)
+		{
+			newangle = bondangle + mathhelp::DegToRad(120);
+		}
+		else
+		{
+			newangle = bondangle + mathhelp::DegToRad(-120);
+		}
+
+		if (tempmolecule->pGetElementByIndex(tempbond.firstelement) != pHovAtom)
+		{
+			newangle = newangle + mathhelp::DegToRad(180);
+		}
+		
+
 		Vector2D startpos = { cdinput.LMBclickPosXSnap, cdinput.LMBclickPosYSnap };
-		cdinput.snapmouseTargetX = 40 * std::cosf(mathhelp::DegToRad(60) + tempangle) + startpos.x;
-		cdinput.snapmouseTargetY = -40 * std::sinf(mathhelp::DegToRad(60) + tempangle) + startpos.y;
+		cdinput.snapmouseTargetX = 40 * std::cosf(newangle) + startpos.x;
+		cdinput.snapmouseTargetY = -40 * std::sinf(newangle) + startpos.y;
 
 		//cdglobalstate.hoveredatom = molekyler.at(cdglobalstate.hoveredobject)->ClosestElement(cdinput.mousePosX, cdinput.mousePosY).first;
 
-		cdinput.bondangle = mathhelp::DegToRad(60) + tempangle;
+		cdinput.bondangle = mathhelp::DegToRad(60) + bondangle;
 		break;
 	}
 	}
