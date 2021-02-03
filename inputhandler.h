@@ -37,7 +37,7 @@ struct Input
 	volatile int rendertargetCY; 
 
 	//Createmolecule properties
-	float bondangle;
+	float bondangle; //FIX!! not really needed?
 };
 
 extern Input cdinput;

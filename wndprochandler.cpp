@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES // for C++
+#include <cmath>
 #include "wndprochandler.h"
 #include "inputhandler.h"
 #include "chemproperties.h"
@@ -412,37 +414,64 @@ void processmessage::CalculateElementEndpoint()
 
 	switch (pHovAtom->connectedbonds.size())
 	{
-	case 1:
-	{
-		Bond tempbond = pHovAtom->connectedbonds.at(0);
-		float bondangle = tempbond.bondangle;
-		float newangle;
-
-		int quadrant = mathhelp::AngleToQuadrant(bondangle);
-		if (quadrant == 0 || quadrant == 2)
+		case 1:
 		{
-			newangle = bondangle + mathhelp::DegToRad(120);
+			Bond tempbond = pHovAtom->connectedbonds.at(0);
+			float bondangle = tempbond.bondangle;
+			float newangle;
+			
+			switch (mathhelp::AngleToQuadrant(bondangle))
+			{
+				case 0:
+				case 2:
+					newangle = bondangle + mathhelp::DegToRad(120);
+					break;
+				case 1:
+				case 3:
+					newangle = bondangle + mathhelp::DegToRad(-120);
+					break;
+				default:
+					newangle = bondangle + mathhelp::DegToRad(120);
+			}
+
+			Vector2D startpos = { cdinput.LMBclickPosXSnap, cdinput.LMBclickPosYSnap };
+			cdinput.snapmouseTargetX = 40 * std::cosf(newangle) + startpos.x;
+			cdinput.snapmouseTargetY = -40 * std::sinf(newangle) + startpos.y;
+
+			//cdglobalstate.hoveredatom = molekyler.at(cdglobalstate.hoveredobject)->ClosestElement(cdinput.mousePosX, cdinput.mousePosY).first;
+
+			cdinput.bondangle = mathhelp::DegToRad(60) + bondangle; 
+			break;
 		}
-		else
+
+		case 2:
 		{
-			newangle = bondangle + mathhelp::DegToRad(-120);
+			Bond tempbond0 = pHovAtom->connectedbonds.at(0);
+			Bond tempbond1 = pHovAtom->connectedbonds.at(1);
+
+			float angle0 = tempbond0.bondangle;
+			float angle1 = tempbond1.bondangle;
+
+			float minangle = std::fminf(angle0, angle1);
+			float maxangle = std::fmaxf(angle0, angle1);
+
+			float deltaangle = maxangle - minangle;
+			float tempangle;
+			if (deltaangle > M_PI)
+			{
+				tempangle = minangle + deltaangle / 2.0f;
+			}
+			else
+			{
+				deltaangle = (2 * M_PI) - deltaangle;
+				tempangle = minangle - deltaangle / 2.0f;
+			}
+			
+			Vector2D startpos = { cdinput.LMBclickPosXSnap, cdinput.LMBclickPosYSnap };
+			cdinput.snapmouseTargetX = 40 * std::cosf(tempangle) + startpos.x;
+			cdinput.snapmouseTargetY = -40 * std::sinf(tempangle) + startpos.y;
+			break;
 		}
-
-		if (tempmolecule->pGetElementByIndex(tempbond.firstelement) != pHovAtom)
-		{
-			newangle = newangle + mathhelp::DegToRad(180);
-		}
-		
-
-		Vector2D startpos = { cdinput.LMBclickPosXSnap, cdinput.LMBclickPosYSnap };
-		cdinput.snapmouseTargetX = 40 * std::cosf(newangle) + startpos.x;
-		cdinput.snapmouseTargetY = -40 * std::sinf(newangle) + startpos.y;
-
-		//cdglobalstate.hoveredatom = molekyler.at(cdglobalstate.hoveredobject)->ClosestElement(cdinput.mousePosX, cdinput.mousePosY).first;
-
-		cdinput.bondangle = mathhelp::DegToRad(60) + bondangle;
-		break;
-	}
 	}
 
 

@@ -1,4 +1,7 @@
+#define _USE_MATH_DEFINES // for C++
+#include <cmath>
 #include "moleculeobject.h"
+#include "mathhelpers.h"
 #include <tuple>
 
 
@@ -42,14 +45,27 @@ void Molecule::AddBond(int firstelement, int secondelement, int bondtype)
 	Vector2D startpos = elements.at(firstelement).pos2D;
 	Vector2D endpos = elements.at(secondelement).pos2D;
 	float angle = atan2(-(endpos.y - startpos.y), endpos.x - startpos.x);
-	bond.bondangle = angle;
+	bond.bondangle = mathhelp::NormalizeAngle0To2Pi(angle);// angle;
 
 	bonds.push_back(bond);
 
-	elements[firstelement].connectedbonds.push_back(GetBondByIndex(bonds.size() - 1));
-	elements[secondelement].connectedbonds.push_back(GetBondByIndex(bonds.size() - 1));
 
-	elements[firstelement].connectedelements.push_back(pGetElementByIndex(secondelement));
+	Bond bond2;
+	bond2.firstelement = secondelement;
+	bond2.secondelement = firstelement;
+	bond2.bondtype = bondtype;
+	bond2.bondangle = mathhelp::NormalizeAngle0To2Pi(angle + M_PI);
+	
+
+	elements[firstelement].connectedbonds.push_back(GetBondByIndex(bonds.size() - 1));
+	elements[secondelement].connectedbonds.push_back(bond2);
+
+	//Vector2D firstvector{ endpos.x - startpos.x, -(endpos.y - startpos.y) };
+	//Vector2D secondvector{ startpos.x - endpos.x, -(startpos.y - endpos.y) };
+	//elements[firstelement].bondvectorfromorigin.push_back(firstvector);
+	//elements[secondelement].bondvectorfromorigin.push_back(secondvector);
+
+	elements[firstelement].connectedelements.push_back(pGetElementByIndex(secondelement)); //FIX!! push_back element object instead of pointer
 	elements[secondelement].connectedelements.push_back(pGetElementByIndex(firstelement));
 }
 

@@ -17,6 +17,7 @@ struct Element
 	int hybridization;
 	std::vector<Element*> connectedelements;
 	std::vector<Bond> connectedbonds;
+	std::vector<Vector2D> bondvectorfromorigin;
 };
 
 struct Bond
